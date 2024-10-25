@@ -14,7 +14,7 @@ modbus::modbus() : enableRelays(false), Baudrate(19200), enableCrcCheck(true), e
   Setters             = new std::vector<subscription_t>{};
 
   Conf_RequestLiveData= new std::vector<std::vector<byte>>{};
-  Conf_RequestIdData  = new std::vector<byte>{};
+  Conf_RequestIdData  = new std::vector<std::vector<byte>>{};
 
   InverterType        = {};
 
@@ -281,11 +281,16 @@ void modbus::LoadInverterConfigFromJson() {
   }
   
   Conf_RequestIdData->clear();
-  for (String elem : doc[this->InverterType.name]["config"]["RequestIdData"].as<JsonArray>()) {
-    byte e = this->String2Byte(elem);
-    Conf_RequestIdData->push_back(e);
+  for (JsonArray arr : doc[this->InverterType.name]["config"]["RequestIdData"].as<JsonArray>()) {
+
+    std::vector<byte> t = {};
+    for (String x : arr) {
+      byte e = this->String2Byte(x);
+      t.push_back(e);
+    }
+    t.push_back(DATAISID); // last byte is datatype
+    Conf_RequestIdData->push_back(t);
   }
-  Conf_RequestIdData->push_back(DATAISID); // last byte is datatype
 
   if (regfile) { regfile.close(); }
 
@@ -332,8 +337,10 @@ void modbus::QueryIdData() {
   */
 
   if (this->ReadQueue->isEmpty()) {
-    if (Config->GetDebugLevel() >=4) { dbg.println(this->PrintDataFrame(this->Conf_RequestIdData).c_str()); }
-    this->ReadQueue->enqueue(*this->Conf_RequestIdData);
+    or (uint8_t i = 0; i < this->Conf_RequestIdData->size(); i++) {
+      if (Config->GetDebugLevel() >=4) { dbg.println(this->PrintDataFrame(&this->Conf_RequestIdData->at(i)).c_str()); }
+      this->ReadQueue->enqueue(this->Conf_RequestIdData->at(i));
+    }
   }
 }
 
