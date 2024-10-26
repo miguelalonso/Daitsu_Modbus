@@ -337,7 +337,7 @@ void modbus::QueryIdData() {
   */
 
   if (this->ReadQueue->isEmpty()) {
-    or (uint8_t i = 0; i < this->Conf_RequestIdData->size(); i++) {
+    for (uint8_t i = 0; i < this->Conf_RequestIdData->size(); i++) {
       if (Config->GetDebugLevel() >=4) { dbg.println(this->PrintDataFrame(&this->Conf_RequestIdData->at(i)).c_str()); }
       this->ReadQueue->enqueue(this->Conf_RequestIdData->at(i));
     }
