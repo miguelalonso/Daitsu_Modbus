@@ -1005,7 +1005,7 @@ void modbus::GetLiveDataAsJson(AsyncResponseStream *response, String subaction) 
     count++;
   }
   
-  response->printf(" ]}, \"object_id\": \"%s/%s\"}", Config->GetMqttBasePath(), Config->GetMqttRoot());
+  response->printf(" ]}, \"object_id\": \"%s/%s\"}", Config->GetMqttBasePath().c_str(), Config->GetMqttRoot().c_str());
 }
 
 /*******************************************************
