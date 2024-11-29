@@ -299,6 +299,7 @@ void MyWebServer::GetInitDataStatus(AsyncResponseStream *response) {
   json["data"]["wifiname"] = (Config->GetUseETH()?"wired LAN":WiFi.SSID());
   json["data"]["macaddress"] = WiFi.macAddress();
   json["data"]["rssi"] = rssi;
+  json["data"]["bssid"] = (Config->GetUseETH()?"wired LAN":WiFi.BSSIDstr());
   json["data"]["mqtt_status"] = (mqtt->GetConnectStatusMqtt()?"Connected":"Not Connected");
   json["data"]["inverter_type"] = mb->GetInverterType();
   json["data"]["inverter_serial"] = mb->GetInverterSN();
