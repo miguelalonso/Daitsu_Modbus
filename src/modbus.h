@@ -10,6 +10,7 @@
 #include <ArduinoQueue.h>
 #include <HardwareSerial.h>
 #include <iomanip>
+#include <sstream>
 
 //#define DEBUGMODE
 

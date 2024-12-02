@@ -1,4 +1,4 @@
-Release 3.2.3:
+Release 3.3.0:
   - new feature: WebSerial as remote serial output (#74)
   - new feature: configurable serial output pins
   - replace deprecated arduinojson library function "containsKey"

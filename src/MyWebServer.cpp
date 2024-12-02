@@ -4,8 +4,6 @@ MyWebServer::MyWebServer(AsyncWebServer *server, DNSServer* dns): DoReboot(false
   
   fsfiles = new handleFiles(server);
 
-  server->begin(); 
-
   server->onNotFound(std::bind(&MyWebServer::handleNotFound, this, std::placeholders::_1));
   server->on("/",                       HTTP_GET, std::bind(&MyWebServer::handleRoot, this, std::placeholders::_1));
    
@@ -37,7 +35,20 @@ MyWebServer::MyWebServer(AsyncWebServer *server, DNSServer* dns): DoReboot(false
           .setDefaultFile("/web/index.html");
   }
   
-  dbg.println(F("WebServer started..."));
+  // try to start the server if wifi is connected, otherwise wait for wifi connection
+  if (mqtt->GetConnectStatusWifi()) {
+    server->begin();
+    dbg.println(F("WebServer has been started ..."));
+  } else {
+    mqtt->improvSerial.onImprovConnected(std::bind(&MyWebServer::onImprovWiFiConnectedCb, this, std::placeholders::_1, std::placeholders::_2));
+  }
+  
+}
+
+void MyWebServer::onImprovWiFiConnectedCb(const char *ssid, const char *password)
+{
+  server->begin();
+  dbg.println(F("WebServer has been started now ..."));
 }
 
 void MyWebServer::handle_update_page(AsyncWebServerRequest *request) {

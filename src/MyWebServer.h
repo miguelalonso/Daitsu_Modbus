@@ -56,6 +56,8 @@ class MyWebServer {
     void      GetInitDataStatus(AsyncResponseStream *response);
     void      GetInitDataNavi(AsyncResponseStream *response);
     
+    void      onImprovWiFiConnectedCb(const char *ssid, const char *password);
+
 };
 
 #endif

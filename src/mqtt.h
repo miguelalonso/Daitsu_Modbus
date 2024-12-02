@@ -3,7 +3,7 @@
 
 #include "commonlibs.h" 
 #include <PubSubClient.h>
-#include <ESPAsyncWiFiManager.h>    // https://github.com/alanswx/ESPAsyncWiFiManager
+#include <ImprovWiFiLibrary.h>
 #include <vector>
 #include "baseconfig.h"
 
@@ -66,6 +66,8 @@ class MQTT: PubSubClient {
 
     using PubSubClient::setCallback;
 
+    ImprovWiFi        improvSerial;
+
   protected:
     void              reconnect();
 
@@ -73,7 +75,6 @@ class MQTT: PubSubClient {
     AsyncWebServer*   server;
     DNSServer*        dns;
     WiFiClient        espClient;
-    AsyncWiFiManager* wifiManager;
 
     std::vector<String>* subscriptions = NULL;
 
@@ -91,10 +92,10 @@ class MQTT: PubSubClient {
   #endif
 
     void              WaitForConnect();
+    void              onImprovWiFiErrorCb(ImprovTypes::Error err);
 
     eth_shield_t*     GetEthShield(String ShieldName);
 
-    void              WifiConfigModeCallback (AsyncWiFiManager* WifiManager);
 };
 
 extern MQTT* mqtt;

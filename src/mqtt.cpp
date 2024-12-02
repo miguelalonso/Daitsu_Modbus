@@ -1,11 +1,18 @@
 #include "mqtt.h"
 
 MQTT::MQTT(AsyncWebServer* server, DNSServer *dns, const char* MqttServer, uint16_t MqttPort, String MqttBasepath, String MqttRoot, char* APName, char* APpassword): 
-server(server), dns(dns), mqtt_root(MqttRoot), mqtt_basepath(MqttBasepath), ConnectStatusWifi(false), ConnectStatusMqtt(false), WifiConnectRetryCount(30) { 
+  server(server), 
+  dns(dns), 
+  improvSerial(&Serial),
+  mqtt_root(MqttRoot), 
+  mqtt_basepath(MqttBasepath), 
+  ConnectStatusWifi(false), 
+  ConnectStatusMqtt(false), 
+  WifiConnectRetryCount(30) 
+{ 
   
   this->subscriptions = new std::vector<String>{};
  
-//  this->mqtt = new PubSubClient();
   WiFi.setHostname(this->mqtt_root.c_str());
 
 #ifdef ESP32  
@@ -16,6 +23,28 @@ server(server), dns(dns), mqtt_root(MqttRoot), mqtt_basepath(MqttBasepath), Conn
     dbg.printf("Go into %s Mode\n", (Config->GetUseETH()?"ETH":"Wifi"));
   }
 
+  ImprovTypes::ChipFamily variant;
+  
+#ifdef ESP32
+  String variantString = ARDUINO_VARIANT;
+#else
+  String variantString = "esp8266";
+#endif
+
+  if (variantString == "esp32s3") {
+      variant = ImprovTypes::ChipFamily::CF_ESP32_S3;
+  } else if (variantString == "esp32c3") {
+      variant = ImprovTypes::ChipFamily::CF_ESP32_C3;
+  } else if (variantString == "esp32s2") {
+      variant = ImprovTypes::ChipFamily::CF_ESP32_S2;
+  } else if (variantString == "esp8266") {
+      variant = ImprovTypes::ChipFamily::CF_ESP8266;
+  } else {
+      variant = ImprovTypes::ChipFamily::CF_ESP32;
+  }
+
+  improvSerial.setDeviceInfo(variant, String(GIT_REPO).c_str(), Config->GetReleaseName().c_str(), Config->GetMqttRoot().c_str());
+  improvSerial.onImprovError(std::bind(&MQTT::onImprovWiFiErrorCb, this, std::placeholders::_1));
   
   if (Config->GetUseETH()) {
     #ifdef ESP32
@@ -27,27 +56,13 @@ server(server), dns(dns), mqtt_root(MqttRoot), mqtt_basepath(MqttBasepath), Conn
                 shield->PHY_MDIO,
                 shield->PHY_TYPE,
                 shield->CLK_MODE);
+    
+      this->WaitForConnect();
     #endif
 
-    this->WaitForConnect();
   } else {
-
-    this->wifiManager = new AsyncWiFiManager(server, dns);
-
-    if (Config->GetDebugLevel() >=4) wifiManager->setDebugOutput(true); 
-      else wifiManager->setDebugOutput(false); 
-
-    // try to WiFi connect only 60sec, after that start configportal
-    wifiManager->setConnectTimeout(60);
-    dbg.println("WiFi Start");
-    
-    wifiManager->setAPCallback(std::bind(&MQTT::WifiConfigModeCallback, this, std::placeholders::_1));
-    // keep configportal open only for 300sec
-    wifiManager->setConfigPortalTimeout(300);
-
-    if (!wifiManager->autoConnect(APName, APpassword) ) {
-      dbg.println("failed to connect to WiFi");
-    }
+    // use Wifi
+    improvSerial.ConnectToWifi(true);
   }
   
   if (Config->GetDebugLevel() >=4) WiFi.printDiag(dbg);
@@ -57,13 +72,6 @@ server(server), dns(dns), mqtt_root(MqttRoot), mqtt_basepath(MqttBasepath), Conn
   
   PubSubClient::setClient(espClient);
   PubSubClient::setServer(MqttServer, MqttPort);
-}
-
-void MQTT::WifiConfigModeCallback (AsyncWiFiManager* WifiManager) {
-  dbg.println("Entering configportal accesspoint mode for 300 sec:");
-  dbg.printf("IP: %s\n", WiFi.softAPIP().toString().c_str());
-  //if you used auto generated SSID, print it
-  dbg.printf("SSID: %s\n", WifiManager->getConfigPortalSSID().c_str());
 }
 
 #ifdef ESP32
@@ -173,6 +181,14 @@ void MQTT::WifiOnEvent(WiFiEvent_t event) {
 }
 #endif
 
+void MQTT::onImprovWiFiErrorCb(ImprovTypes::Error err)
+{
+  if(err == ImprovTypes::Error::ERROR_WIFI_CONNECT_GIVEUP) {
+    Serial.println("Giving up on connecting to WiFi, restart the device");
+    ESP.restart();
+  }
+}
+
 /*######################################
 return LanShield parameter tuple 
 ########################################*/
@@ -189,7 +205,7 @@ eth_shield_t* MQTT::GetEthShield(String ShieldName) {
 void MQTT::WaitForConnect() {
   while (!this->ConnectStatusWifi)
     delay(100);
-dbg.println("Wait for connect");    
+    dbg.println("Wait for connect");    
     //yield();
 }
 
@@ -268,7 +284,6 @@ String MQTT::getTopic(String subtopic, bool fulltopic) {
       subtopic = this->mqtt_basepath + "/" + this->mqtt_root +  "/" + subtopic;
   }
   return subtopic;
-
 }
 
 void MQTT::Publish_IP() { 
@@ -320,6 +335,7 @@ void MQTT::ClearSubscriptions() {
 }
 
 void MQTT::loop() { 
+  improvSerial.loop();
 
   #ifdef ESP8266
     if (WiFi.status() == WL_CONNECTED) {
@@ -347,28 +363,6 @@ void MQTT::loop() {
     }
     this->mqtt_basepath = Config->GetMqttBasePath();
     if (PubSubClient::connected()) PubSubClient::disconnect();
-  }
-
-  // WIFI lost, try to reconnect
-  if (!Config->GetUseETH() && !this->ConnectStatusWifi) {
-    if (this->WifiConnectRetryCount > 0) {
-      dbg.print("WIFI lost, try to reconnect...");    
-      wifiManager->setConfigPortalTimeout(0);
-      WiFi.reconnect();
-      delay(5000);
-      bool wl_status = (WiFi.status()==WL_CONNECTED?true:false);
-      dbg.printf("WIFI reconnect status: %s\n", (wl_status?"OK":"Failed"));
-      if (!wl_status) {
-        this->WifiConnectRetryCount--;
-        dbg.printf("%d tries left\n", this->WifiConnectRetryCount);
-      }
-    } else {
-      // reconnect times exeeded -> reboot
-      dbg.println("Wifi Reconnect failed for 10 times, initiiate ESP reboot");
-      ESP.restart();
-    }
-  } else {
-    this->WifiConnectRetryCount = 30;
   }
 
   // WIFI ok, MQTT lost
