@@ -78,6 +78,15 @@ do
   BINARYFILENAME=$(basename $FILENAME"."$ARCH".v"$VERSION"-"$SUBVERSION"."$STAGE)
   DOWNLOADURL="http://tfa-releases.s3-website.eu-central-1.amazonaws.com/"$REPOSITORYNAME"/"$BINARYFILENAME"."$FILEEXT
 
+  if [[ -f $BINARYPATH"merged-"$(basename $FILENAME)"."$FILEEXT ]]; then
+    FULLFILENAME="merged-"$BINARYFILENAME
+    FULLFILE_URL="http://tfa-releases.s3-website.eu-central-1.amazonaws.com/"$REPOSITORYNAME"/"$FULLFILENAME"."$FILEEXT
+  else
+    echo "merged file not found at "$BINARYPATH"merged-"$(basename $FILENAME)"."$FILEEXT
+    FULLFILENAME=""
+    FULLFILE_URL=""
+  fi
+
   JSON='      {
   "name":"Release '$VERSION'-'$STAGE'",
   "version":"'$VERSION'",
@@ -85,14 +94,19 @@ do
   "number":'$NUMBER',
   "stage":"'$STAGE'",
   "arch":"'$ARCH'",
-  "download-url":"'$DOWNLOADURL'"
+  "download-url":"'$DOWNLOADURL'",
+  "url_fullfile":"'$FULLFILE_URL'"
       }'
 
   echo -e "\n\n"$GREEN"Echo json string"$NC
-  echo $JSON
+  echo $JSON 
 
   echo $JSON > $RELEASEPATH/$BINARYFILENAME".json"
   cp $FILE $RELEASEPATH/$BINARYFILENAME"."$FILEEXT
+  
+  if [[ -f $BINARYPATH"merged-"$(basename $FILENAME)"."$FILEEXT ]]; then
+    cp $BINARYPATH"merged-"$(basename $FILENAME)"."$FILEEXT $RELEASEPATH/$FULLFILENAME"."$FILEEXT
+  fi
 
 done
 
