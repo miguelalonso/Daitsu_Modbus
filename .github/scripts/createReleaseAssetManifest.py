@@ -1,6 +1,6 @@
 from myUtils import *
 """
-This script creates the manifest_all.json as release asset.
+This script creates the manifest_all.json as release asset. 
 
 Arguments:
     -r, --ReleaseURL (str): The URL of the release. Its an mandatory argument.

@@ -2,7 +2,7 @@ import argparse, os
 from pathlib import Path
 from myUtils import *
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser() 
 
 # erwartete Parameter
 parser.add_argument('--FwDir', type=str, help='Root Verzeichnis für alle Firmwares', default='web-installer/firmware')

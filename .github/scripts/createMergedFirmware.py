@@ -12,7 +12,7 @@ Functions:
     readOffsetFromPartitionCSV(path: str, name: str) -> int:
         Args:
         Returns:
-Example:
+Example: 
     python createMergedFirmware.py -c ESP32 -b ./build -p ./partitions.csv
 '''
 

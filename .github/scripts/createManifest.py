@@ -2,7 +2,7 @@ import os, shutil, sys, json, argparse, logging
 from myUtils import *
 
 # Konfigurieren des Loggings
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO) 
 
 # Argument parser
 parser = argparse.ArgumentParser(description='Generate JSON and handle binaries.')
