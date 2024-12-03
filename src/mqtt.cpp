@@ -7,8 +7,7 @@ MQTT::MQTT(AsyncWebServer* server, DNSServer *dns, const char* MqttServer, uint1
   mqtt_root(MqttRoot), 
   mqtt_basepath(MqttBasepath), 
   ConnectStatusWifi(false), 
-  ConnectStatusMqtt(false), 
-  WifiConnectRetryCount(30) 
+  ConnectStatusMqtt(false)
 { 
   
   this->subscriptions = new std::vector<String>{};
@@ -64,14 +63,25 @@ MQTT::MQTT(AsyncWebServer* server, DNSServer *dns, const char* MqttServer, uint1
     // use Wifi
     improvSerial.ConnectToWifi(true);
   }
-  
+
   if (Config->GetDebugLevel() >=4) WiFi.printDiag(dbg);
 
-  dbg.printf("Starting MQTT (%s:%d)\n", MqttServer, MqttPort);
+  dbg.printf("Initializing MQTT (%s:%d)\n", Config->GetMqttServer().c_str(), Config->GetMqttPort());
   espClient = WiFiClient();
   
   PubSubClient::setClient(espClient);
-  PubSubClient::setServer(MqttServer, MqttPort);
+  PubSubClient::setServer(Config->GetMqttServer().c_str(), Config->GetMqttPort());
+}
+
+void MQTT::onImprovWiFiErrorCb(ImprovTypes::Error err)
+{
+  if(err == ImprovTypes::Error::ERROR_WIFI_DISCONNECTED) {
+    this->disconnect();
+  }
+  if(err == ImprovTypes::Error::ERROR_WIFI_CONNECT_GIVEUP) {
+    Serial.println("Giving up on connecting to WiFi, restart the device");
+    ESP.restart();
+  }
 }
 
 #ifdef ESP32
@@ -180,14 +190,6 @@ void MQTT::WifiOnEvent(WiFiEvent_t event) {
     }
 }
 #endif
-
-void MQTT::onImprovWiFiErrorCb(ImprovTypes::Error err)
-{
-  if(err == ImprovTypes::Error::ERROR_WIFI_CONNECT_GIVEUP) {
-    Serial.println("Giving up on connecting to WiFi, restart the device");
-    ESP.restart();
-  }
-}
 
 /*######################################
 return LanShield parameter tuple 
@@ -368,7 +370,6 @@ void MQTT::loop() {
   // WIFI ok, MQTT lost
   if (!PubSubClient::connected() && this->ConnectStatusWifi) { 
     if (millis() - mqttreconnect_lasttry > 10000) {
-      //espClient = WiFiClient();
       this->reconnect(); 
       this->mqttreconnect_lasttry = millis();
     }
@@ -396,5 +397,4 @@ void MQTT::loop() {
       this->Publish_String("rssi", buffer, false);
     }
   }
-  
 }

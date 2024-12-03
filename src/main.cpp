@@ -75,7 +75,7 @@ void setup() {
   mb = new modbus();
   mb->enableMqtt(mqtt);
 
-  dbg.println("Starting WebServer");
+  dbg.println("attempting to start WebServer");
   mywebserver = new MyWebServer(&server, &dns);
 }
 

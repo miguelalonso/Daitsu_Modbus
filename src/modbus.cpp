@@ -314,8 +314,6 @@ byte modbus::String2Byte(String s){
 *******************************************************/
 void modbus::enableMqtt(MQTT* object) {
   this->mqtt = object;
-  dbg.println("MQTT aktiviert");
-
   this->GenerateMqttSubscriptions();
 }
 
