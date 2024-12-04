@@ -44,5 +44,6 @@ request: 01 03 00 00 00 07 08 04
 Response: 01 03 .....
 </pre>
 
+Burn firmware on your device via web-installer: https://tobiasfaust.github.io/SolaxModbusGateway/
 
 ## please refer full documentation and How-To´s in our [Wiki](https://github.com/tobiasfaust/SolaxModbusGateway/wiki)
