@@ -51,6 +51,8 @@ The HW-0519 breakout board does not need a separate RTS-pin, because it automati
 
 ![image](https://github.com/user-attachments/assets/645b0a99-bd2a-4e4d-b6e3-7d1b906e40fa)
 
+https://electronics.stackexchange.com/questions/244425/how-is-this-rs485-module-working
+
 
 #Board HW-97
 This board is a standard TTL zu RS485 Module with MAX485. It runs per default with 5VDC, but it works with 3.3VDC too. It is a halfdublex Board and has 2 separates RTS-pins (DI/RO) which have to connect together to 1 RTS-Pin.
