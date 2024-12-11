@@ -8,13 +8,14 @@
 
 Este proyecto describe como comunicarse por Modbus con una aerotermia Daitsu con un ESP826 y enviar los datos a Home Asiistant.  
 https://daitsu.es/
+https://www.eurofred.com/es/
 
 ### Supported Datisu
 Creo que puede comunicarse con las aertotermias Daistu distribuidas en España por Eurfreed:
 *
 * 
-* 
-* 
+* yo lo he probado con la serie monobloc AOWD40
+* https://www.eurofred.com/es/monobloc/sistema-multitarea-daitsu-monobloc-3d-smart-aowd-40/p/3IDA02204
 * 
 * 
 * 
@@ -84,6 +85,9 @@ RS485    Daitsu panel de control
   A   ->  Pin A
   B   ->  Pin B
   G   ->  Pin 6 (Ground is optional)
+
+
+![image](https://github.com/user-attachments/assets/47b6f918-5ffe-417f-ba12-81a878fa29ef)
 
 
 ## Referencias:
