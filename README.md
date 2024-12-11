@@ -86,3 +86,7 @@ RS485    Daitsu panel de control
   G   ->  Pin 6 (Ground is optional)
 
 
+## Referencias:
+https://github.com/tobiasfaust/SolaxModbusGateway/wiki/wiring-the-circuit
+
+
