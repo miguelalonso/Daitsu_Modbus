@@ -1,5 +1,5 @@
 # Daitsu (aerotermia) (heat to water) Modbus-RTU to Home Assistant 
-**Para aerotermias Daitsu distribuidas por Eurofredd - similares a Gree**
+**Para aerotermias Daitsu distribuidas por Eurofred - similares a Gree**
 
 [![license](https://img.shields.io/badge/Licence-GNU%20v3.0-green)](https://github.com/desktop/desktop/blob/master/LICENSE)
 ![ESP32 Architecture](https://img.shields.io/badge/Architecture-ESP32-blue)
@@ -91,6 +91,8 @@ RS485    Daitsu panel de control
 
 ![image](https://github.com/user-attachments/assets/47b6f918-5ffe-417f-ba12-81a878fa29ef)
 
+Esta Aerotermia funciona con la app EPWE o Gree++
+No he enontrado un modo directo de incluirlas en Home Asisitant, que sería lo ideal
 
 ## Referencias:
 https://github.com/tobiasfaust/SolaxModbusGateway/wiki/wiring-the-circuit
