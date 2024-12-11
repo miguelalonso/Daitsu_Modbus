@@ -1,0 +1,160 @@
+esphome:
+  name: daitsu
+
+esp8266:
+  board: nodemcuv2
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: "enter here your api password"
+
+ota:
+  - platform: esphome
+    password: "enter here your ota password"
+
+wifi:
+  ssid: "TP-Link_432A"
+  password: "enter here your router wifi password"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Daitsu Fallback Hotspot"
+    password: "password"
+
+captive_portal:
+
+web_server:
+  port: 80  
+
+button:
+  - platform: restart
+    name: "Daitsu ESP8266 Restart"  
+    
+uart:
+  id: mod_bus
+  baud_rate: 9600
+  tx_pin: GPIO15  # TX2
+  rx_pin: GPIO13  # RX2
+  rx_buffer_size: 1024
+  data_bits: 8
+  stop_bits: 1
+  parity: NONE
+
+modbus:
+  id: modbus1
+  
+modbus_controller:
+  - id: daitsuAerotermia
+    address: 0x2
+    modbus_id: modbus1
+    setup_priority: -10
+    command_throttle: 750ms
+    update_interval: 15s
+
+sensor:
+       
+   - name: "DaitsuTReferencia"
+     id: Treferencia
+     platform: modbus_controller
+     modbus_controller_id: daitsuAerotermia
+     register_type: holding
+     address: 0x0A
+     value_type: U_WORD
+     unit_of_measurement: "ºC"
+     device_class: temperature
+     state_class: measurement
+     accuracy_decimals: 0
+     filters:
+       - multiply: 1.0
+      
+   - name: "DaitsuTR02"
+     id: Treferencia02
+     platform: modbus_controller
+     modbus_controller_id: daitsuAerotermia
+     register_type: holding
+     address: 0x7C
+     value_type: U_WORD
+     unit_of_measurement: "ºC"
+     device_class: temperature
+     state_class: measurement
+     accuracy_decimals: 0
+     filters:
+       - multiply: 1.0
+
+  
+ 
+   - name: "DaitsuTsalida"
+     id: Tsalida
+     platform: modbus_controller
+     modbus_controller_id: daitsuAerotermia
+     register_type: holding
+     address: 0x7D
+     value_type: U_WORD
+     unit_of_measurement: "ºC"
+     device_class: temperature
+     state_class: measurement
+     accuracy_decimals: 1
+     filters:
+       - multiply: 0.1
+   
+
+
+
+   - name: "DaitsuTR04"
+     id: Treferencia04
+     platform: modbus_controller
+     modbus_controller_id: daitsuAerotermia
+     register_type: holding
+     address: 0x7E
+     value_type: U_WORD
+     unit_of_measurement: "ºC"
+     device_class: temperature
+     state_class: measurement
+     accuracy_decimals: 0
+     filters:
+      - multiply: 1.0
+   
+   - name: "DaitsuTR134"
+     id: Treferencia104
+     platform: modbus_controller
+     modbus_controller_id: daitsuAerotermia
+     register_type: holding
+     address: 0x7E
+     value_type: U_WORD
+     unit_of_measurement: "ºC"
+     device_class: temperature
+     state_class: measurement
+     accuracy_decimals: 0
+     filters:
+      - multiply: 1.0
+ 
+   - name: "DaitsuTentrada"
+     id: Tentrada
+     platform: modbus_controller
+     modbus_controller_id: daitsuAerotermia
+     register_type: holding
+     address: 0x7F
+     value_type: U_WORD
+     unit_of_measurement: "ºC"
+     device_class: temperature
+     state_class: measurement
+     accuracy_decimals: 1
+     filters:
+      - multiply: 0.1
+
+   
+    
+                        
+number:
+  - platform: modbus_controller
+    modbus_controller_id: daitsuAerotermia
+    id: daitsutempajuste
+    name: "DatitsuTajuste"
+    address: 0x0A
+    value_type: U_WORD
+    min_value: 9
+    max_value: 60
+    multiply: 1.0
