@@ -32,3 +32,8 @@ Hay que responder a una serie de preguntas sobre la configuración que estamos u
 se ve cómo se carga el código al ESP8266 que está conectado al ordenador por el puesto USB. a partir de la primera carga ya se puede actualizar el software vía WIFI (a través de OTA)
 el programa, después de compilar, ya pregunta cómo se desea actualizar (vía wifi -OTA o vía puerto USB)
 > 
+
+
+## ESPhome MODBUS
+https://esphome.io/components/modbus_controller.html
+en está página está la información para la programación modbus a incluir en el fichero datisu.yaml
