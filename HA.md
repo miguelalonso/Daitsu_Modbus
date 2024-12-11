@@ -1,5 +1,5 @@
 when ESP8266 is running is automatically discovered in Home Asssistant
-![image](https://github.com/user-attachments/assets/9cd23a38-2c14-4c58-ad51-d4b6b029b8e9)
 
+![image](https://github.com/user-attachments/assets/ef327060-a2ad-4869-b129-0bd70df27118)
 
-![image](https://github.com/user-attachments/assets/7bbf8068-7879-4a6e-800d-0920a35098d5)
+![image](https://github.com/user-attachments/assets/77bfc57a-ab7c-450d-9dd3-e8f857505daa)
