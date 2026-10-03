@@ -72,6 +72,17 @@ En la parte posterior del panel de control tactil de la aerotermai Daitsu hay un
 # ESP8266 ⬌ breakout board
 The schematic is very simple. Just connect the ESP8266 with RS-485 TTL Adapter by RX/TX 2. 
 
+modificado (2026) para que no falle en caso de rearranque a D1 y D2
+ESP8266   HW-0519     HW-97   
+------------------------------
+GPIO5 -D2     ->  RX     -> RO      
+GPIO4 - D1    ->  TX     -> DI      
+GND            ->  GND    -> GND    
+3V3            ->  VCC    -> VCC     
+D5                        -> DE+RE   
+
+
+
 ESP8266   HW-0519     HW-97   
 ------------------------------
 GPIO13 -D7     ->  RX     -> RO      
